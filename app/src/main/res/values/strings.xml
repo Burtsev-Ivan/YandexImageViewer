@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ImageViewer</string>
+    <string name="data_load_error">При загрузке данных произошла ошибка</string>
+    <string name="repeat">Повторить</string>
 </resources>
