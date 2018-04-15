@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         });
         groupsViewModel.getPhotos().observe(this, photoAdapter::setData);
 
-        photoAdapter.setOnClickListener(url -> {
-            Intent intent = PhotoDetailActivity.getStartIntent(this, url);
+        photoAdapter.setOnClickListener(photo -> {
+            Intent intent = PhotoDetailActivity.getStartIntent(this, photo.getUrls().getRegular());
             startActivity(intent);
         });
     }

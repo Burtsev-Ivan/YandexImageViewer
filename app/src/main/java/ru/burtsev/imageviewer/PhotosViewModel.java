@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,7 +17,7 @@ import ru.burtsev.imageviewer.rest.RestUtils;
 
 public class PhotosViewModel extends ViewModel {
 
-    private MutableLiveData<List<String>> liveData;
+    private MutableLiveData<List<Photo>> liveData;
     @Getter
     private final MutableLiveData<StatusLoad> liveDataStatus = new MutableLiveData<>();
     private final CompositeDisposable compositeDisposable;
@@ -28,7 +27,7 @@ public class PhotosViewModel extends ViewModel {
     }
 
 
-    public LiveData<List<String>> getPhotos() {
+    public LiveData<List<Photo>> getPhotos() {
         if (liveData == null) {
             liveData = new MutableLiveData<>();
             loadData();
@@ -41,13 +40,6 @@ public class PhotosViewModel extends ViewModel {
         Disposable subscribe = RestUtils.getApiService().getPhotos()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
-                .map(photos -> {
-                    List<String> photoUrls = new ArrayList<>();
-                    for (Photo photo : photos) {
-                        photoUrls.add(photo.getUrls().getRegular());
-                    }
-                    return photoUrls;
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(photos -> {
                     liveData.postValue(photos);

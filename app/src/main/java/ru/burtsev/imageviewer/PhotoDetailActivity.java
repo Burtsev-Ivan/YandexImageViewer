@@ -30,6 +30,8 @@ public class PhotoDetailActivity extends AppCompatActivity {
 
         Picasso.get()
                 .load(url)
+                .fit()
+                .centerInside()
                 .into(imageView);
     }
 

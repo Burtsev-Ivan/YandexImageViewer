@@ -17,12 +17,13 @@ import java.util.List;
 import ru.burtsev.imageviewer.R;
 import ru.burtsev.imageviewer.adapter.holder.PhotoHolder;
 import ru.burtsev.imageviewer.interfaces.OnItemClickListener;
+import ru.burtsev.imageviewer.model.Photo;
 
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
 
-    private List<String> urls = new ArrayList<>();
-    private OnItemClickListener<String> onItemClickListener;
+    private List<Photo> photos = new ArrayList<>();
+    private OnItemClickListener<Photo> onItemClickListener;
 
     @NonNull
     @Override
@@ -31,7 +32,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
         PhotoHolder groupHolder = new PhotoHolder(v);
         groupHolder.itemView.setOnClickListener(v1 -> {
             if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(urls.get(groupHolder.getAdapterPosition()));
+                onItemClickListener.onItemClick(photos.get(groupHolder.getAdapterPosition()));
             }
         });
 
@@ -40,34 +41,27 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
-        String url = urls.get(position);
-        int v = (int) convertDpToPixel(200, holder.imageView.getContext());
+        Photo photo = photos.get(position);
+        int photoSize = (int) convertDpToPixel(200, holder.imageView.getContext());
         Picasso.get()
-                .load(url)
-                .resize(v, v)
+                .load(photo.getUrls().getSmall())
+                .resize(photoSize, photoSize)
                 .centerCrop()
                 .into(holder.imageView);
-
-
-//        DisplayMetrics displaymetrics = holder.itemView.getContext().getResources().getDisplayMetrics();
-//        int devicewidth = displaymetrics.widthPixels / 2;
-//        holder.imageView.getLayoutParams().width = devicewidth;
-//        holder.imageView.getLayoutParams().height = devicewidth;
-
     }
 
     @Override
     public int getItemCount() {
-        return urls.size();
+        return photos.size();
     }
 
 
-    public void setData(List<String> groups) {
-        this.urls = groups;
+    public void setData(List<Photo> groups) {
+        this.photos = groups;
         notifyDataSetChanged();
     }
 
-    public void setOnClickListener(OnItemClickListener<String> onClickListener) {
+    public void setOnClickListener(OnItemClickListener<Photo> onClickListener) {
         this.onItemClickListener = onClickListener;
     }
 
