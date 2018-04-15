@@ -1,11 +1,12 @@
 package ru.burtsev.imageviewer;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.res.Configuration;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -16,8 +17,6 @@ import ru.burtsev.imageviewer.adapter.PhotoAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int recyclerColumn = 2;
-
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -27,28 +26,19 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recycler_photos)
     RecyclerView recyclerPhotos;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        toolbar.setTitle(R.string.main_activity_title);
+        setSupportActionBar(toolbar);
 
-        Display getOrient = getWindowManager().getDefaultDisplay();
-        if (getOrient.getWidth() == getOrient.getHeight()) {
-            recyclerColumn = 2;
-        } else {
-            if (getOrient.getWidth() < getOrient.getHeight()) {
-                recyclerColumn = 2;
-            } else {
-                recyclerColumn = 4;
-            }
-        }
+        int recyclerColumn = getRecyclerColumn();
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         PhotoAdapter photoAdapter = new PhotoAdapter();
         recyclerPhotos.setLayoutManager(new GridLayoutManager(this, recyclerColumn));
@@ -76,24 +66,32 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         });
-        groupsViewModel.getPhotos().observe(this, urls -> {
-            photoAdapter.setData(urls);
+        groupsViewModel.getPhotos().observe(this, photoAdapter::setData);
+
+        photoAdapter.setOnClickListener(url -> {
+            Intent intent = PhotoDetailActivity.getStartIntent(this, url);
+            startActivity(intent);
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
-    public int getScreenOrientation() {
+    private int getRecyclerColumn() {
         Display getOrient = getWindowManager().getDefaultDisplay();
-        int orientation;
+        int column;
         if (getOrient.getWidth() == getOrient.getHeight()) {
-            orientation = Configuration.ORIENTATION_SQUARE;
+            column = 2;
         } else {
             if (getOrient.getWidth() < getOrient.getHeight()) {
-                orientation = Configuration.ORIENTATION_PORTRAIT;
+                column = 2;
             } else {
-                orientation = Configuration.ORIENTATION_LANDSCAPE;
+                column = 4;
             }
         }
-        return orientation;
+        return column;
     }
+
 }
