@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.burtsev.imageviewer.adapter.PhotoAdapter;
+import ru.burtsev.imageviewer.adapter.PhotoAdapter2;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
         int recyclerColumn = getRecyclerColumn();
 
 
-        PhotoAdapter photoAdapter = new PhotoAdapter();
+        PhotoDiffUtilCallback photoDiffUtilCallback = new PhotoDiffUtilCallback();
+        PhotoAdapter2 photoAdapter = new PhotoAdapter2(photoDiffUtilCallback);
+
         recyclerPhotos.setLayoutManager(new GridLayoutManager(this, recyclerColumn));
         recyclerPhotos.setAdapter(photoAdapter);
 
-        PhotosViewModel groupsViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
-        groupsViewModel.getLiveDataStatus().observe(this, statusLoad -> {
+        PhotosViewModel photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
+        photosViewModel.init();
+        photosViewModel.getLiveDataStatus().observe(this, statusLoad -> {
             switch (statusLoad) {
                 case ERROR:
                     recyclerPhotos.setVisibility(View.GONE);
@@ -66,7 +70,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         });
-        groupsViewModel.getPhotos().observe(this, photoAdapter::setData);
+//        photosViewModel.getPhotos().observe(this, photoAdapter::setData);
+        photosViewModel.getLiveData().observe(this, photos -> {
+            photoAdapter.submitList(photos);
+        });
 
         photoAdapter.setOnClickListener(photo -> {
             Intent intent = PhotoDetailActivity.getStartIntent(this, photo.getUrls().getRegular());
