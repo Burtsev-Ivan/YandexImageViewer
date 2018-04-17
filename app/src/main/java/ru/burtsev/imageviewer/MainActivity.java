@@ -13,7 +13,8 @@ import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.burtsev.imageviewer.adapter.PhotoAdapter2;
+import ru.burtsev.imageviewer.adapter.PhotoAdapter;
+import ru.burtsev.imageviewer.adapter.PhotoDiffUtilCallback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,40 +41,16 @@ public class MainActivity extends AppCompatActivity {
 
         int recyclerColumn = getRecyclerColumn();
 
-
         PhotoDiffUtilCallback photoDiffUtilCallback = new PhotoDiffUtilCallback();
-        PhotoAdapter2 photoAdapter = new PhotoAdapter2(photoDiffUtilCallback);
+        PhotoAdapter photoAdapter = new PhotoAdapter(photoDiffUtilCallback);
 
         recyclerPhotos.setLayoutManager(new GridLayoutManager(this, recyclerColumn));
         recyclerPhotos.setAdapter(photoAdapter);
 
         PhotosViewModel photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
         photosViewModel.init();
-        photosViewModel.getLiveDataStatus().observe(this, statusLoad -> {
-            switch (statusLoad) {
-                case ERROR:
-                    recyclerPhotos.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.GONE);
-                    viewError.setVisibility(View.VISIBLE);
-                    break;
-
-                case SUCCESS:
-                    progressBar.setVisibility(View.GONE);
-                    viewError.setVisibility(View.GONE);
-                    recyclerPhotos.setVisibility(View.VISIBLE);
-                    break;
-
-                case IN_PROGRESS:
-                    recyclerPhotos.setVisibility(View.GONE);
-                    viewError.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.VISIBLE);
-                    break;
-            }
-        });
-//        photosViewModel.getPhotos().observe(this, photoAdapter::setData);
-        photosViewModel.getLiveData().observe(this, photos -> {
-            photoAdapter.submitList(photos);
-        });
+        photosViewModel.getLiveDataStatus().observe(this, photoAdapter::setNetworkState);
+        photosViewModel.getLiveData().observe(this, photoAdapter::submitList);
 
         photoAdapter.setOnClickListener(photo -> {
             Intent intent = PhotoDetailActivity.getStartIntent(this, photo.getUrls().getRegular());

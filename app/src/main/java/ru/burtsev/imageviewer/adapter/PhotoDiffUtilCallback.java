@@ -1,4 +1,4 @@
-package ru.burtsev.imageviewer;
+package ru.burtsev.imageviewer.adapter;
 
 import android.support.v7.util.DiffUtil;
 

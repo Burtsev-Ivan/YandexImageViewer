@@ -1,4 +1,4 @@
-package ru.burtsev.imageviewer;
+package ru.burtsev.imageviewer.paging;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.MutableLiveData;
@@ -14,24 +14,29 @@ import ru.burtsev.imageviewer.rest.RestUtils;
 
 class PhotoDataSource extends PositionalDataSource<Photo> {
 
-    @Getter
-    private final MutableLiveData<StatusLoad> liveDataStatus = new MutableLiveData<>();
+    private static final int DEFAULT_PAGE = 1;
 
+    @Getter
+    private MutableLiveData<StatusLoad> liveDataStatus;
+
+    private int pageNumber = 2;
+
+
+    public PhotoDataSource(MutableLiveData<StatusLoad> liveDataStatus) {
+        this.liveDataStatus = liveDataStatus;
+    }
 
     @SuppressLint("CheckResult")
     @Override
     public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Photo> callback) {
         liveDataStatus.postValue(StatusLoad.IN_PROGRESS);
-        RestUtils.getApiService().getPhotos(params.requestedLoadSize)
+        RestUtils.getApiService().getPhotos(DEFAULT_PAGE)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(photos -> {
                     callback.onResult(photos, 0);
                     liveDataStatus.postValue(StatusLoad.SUCCESS);
-                }, throwable -> {
-                    liveDataStatus.postValue(StatusLoad.ERROR);
-                });
+                }, throwable -> liveDataStatus.postValue(StatusLoad.ERROR));
     }
 
 
@@ -39,16 +44,13 @@ class PhotoDataSource extends PositionalDataSource<Photo> {
     @Override
     public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Photo> callback) {
         liveDataStatus.postValue(StatusLoad.IN_PROGRESS);
-        RestUtils.getApiService().getPhotos(params.startPosition / 10)
+        RestUtils.getApiService().getPhotos(pageNumber++)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(photos -> {
                     callback.onResult(photos);
                     liveDataStatus.postValue(StatusLoad.SUCCESS);
-                }, throwable -> {
-                    liveDataStatus.postValue(StatusLoad.ERROR);
-                });
+                }, throwable -> liveDataStatus.postValue(StatusLoad.ERROR));
     }
 
 }

@@ -10,6 +10,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import lombok.Getter;
 import ru.burtsev.imageviewer.model.Photo;
 import ru.burtsev.imageviewer.model.StatusLoad;
+import ru.burtsev.imageviewer.paging.PhotoSourceFactory;
 
 public class PhotosViewModel extends ViewModel {
 
@@ -25,16 +26,18 @@ public class PhotosViewModel extends ViewModel {
 
 
     public void init() {
+        if (liveData == null) {
+            PagedList.Config config = new PagedList.Config.Builder()
+                    .setEnablePlaceholders(false)
+                    .setPageSize(1)
+                    .setPrefetchDistance(5)
+                    .build();
 
-        PagedList.Config config = new PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPageSize(1)
-                .setPrefetchDistance(5)
-                .build();
 
-        MySourceFactory sourceFactory = new MySourceFactory();
-        liveData = new LivePagedListBuilder(sourceFactory, config).build();
-//        liveDataStatus = sourceFactory.getStatusLoad();
+            PhotoSourceFactory sourceFactory = new PhotoSourceFactory(liveDataStatus);
+            liveData = new LivePagedListBuilder(sourceFactory, config).build();
+        }
+
 
     }
 

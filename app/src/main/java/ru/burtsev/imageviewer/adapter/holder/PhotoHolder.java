@@ -15,13 +15,5 @@ public class PhotoHolder extends RecyclerView.ViewHolder {
     public PhotoHolder(View itemView) {
         super(itemView);
         imageView = itemView.findViewById(R.id.image_photo);
-
-//        imageView.post(() -> {
-//            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                    imageView.getMeasuredWidth(),
-//                    imageView.getMeasuredWidth());
-//            imageView.setLayoutParams(layoutParams);
-//            imageView.requestLayout();
-//        });
     }
 }
