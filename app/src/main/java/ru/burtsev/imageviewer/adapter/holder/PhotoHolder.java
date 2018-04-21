@@ -4,16 +4,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ru.burtsev.imageviewer.R;
 
 
 public class PhotoHolder extends RecyclerView.ViewHolder {
 
-    public final ImageView imageView;
+    @BindView(R.id.image_photo)
+    public ImageView imageView;
 
 
     public PhotoHolder(View itemView) {
         super(itemView);
-        imageView = itemView.findViewById(R.id.image_photo);
+        ButterKnife.bind(this, itemView);
     }
 }

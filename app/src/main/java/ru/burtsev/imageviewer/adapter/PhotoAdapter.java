@@ -14,16 +14,20 @@ import ru.burtsev.imageviewer.R;
 import ru.burtsev.imageviewer.adapter.holder.NetworkStateItemHolder;
 import ru.burtsev.imageviewer.adapter.holder.PhotoHolder;
 import ru.burtsev.imageviewer.interfaces.OnItemClickListener;
+import ru.burtsev.imageviewer.interfaces.RetryCallback;
 import ru.burtsev.imageviewer.model.Photo;
 import ru.burtsev.imageviewer.model.StatusLoad;
 
 public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolder> {
 
     private OnItemClickListener<Photo> onItemClickListener;
+    private RetryCallback retryCallback;
     private StatusLoad networkState;
 
-    public PhotoAdapter(@NonNull DiffUtil.ItemCallback<Photo> diffCallback) {
+    public PhotoAdapter(@NonNull DiffUtil.ItemCallback<Photo> diffCallback, OnItemClickListener<Photo> onItemClickListener, RetryCallback retryCallback) {
         super(diffCallback);
+        this.retryCallback = retryCallback;
+        this.onItemClickListener = onItemClickListener;
     }
 
 
@@ -48,7 +52,7 @@ public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolde
 
         } else if (viewType == R.layout.list_item_network_state) {
             view = layoutInflater.inflate(R.layout.list_item_network_state, parent, false);
-            return new NetworkStateItemHolder(view);
+            return new NetworkStateItemHolder(view, retryCallback);
         } else {
             throw new IllegalArgumentException("unknown view type");
         }
@@ -104,22 +108,16 @@ public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolde
                 NetworkStateItemHolder networkStateItemHolder = (NetworkStateItemHolder) holder;
                 if (networkState == StatusLoad.IN_PROGRESS) {
                     networkStateItemHolder.progressBar.setVisibility(View.VISIBLE);
-                } else {
+                    networkStateItemHolder.buttonRetryLoading.setVisibility(View.GONE);
+                    networkStateItemHolder.errorMessage.setVisibility(View.GONE);
+
+                } else if (networkState == StatusLoad.ERROR) {
                     networkStateItemHolder.progressBar.setVisibility(View.GONE);
-                }
-                if (networkState == StatusLoad.ERROR) {
-                    networkStateItemHolder.errorMsg.setVisibility(View.VISIBLE);
-                    networkStateItemHolder.errorMsg.setText(R.string.data_load_error);
-                } else {
-                    networkStateItemHolder.errorMsg.setVisibility(View.GONE);
+                    networkStateItemHolder.buttonRetryLoading.setVisibility(View.VISIBLE);
+                    networkStateItemHolder.errorMessage.setVisibility(View.VISIBLE);
                 }
                 break;
         }
 
-    }
-
-
-    public void setOnClickListener(OnItemClickListener<Photo> onClickListener) {
-        this.onItemClickListener = onClickListener;
     }
 }

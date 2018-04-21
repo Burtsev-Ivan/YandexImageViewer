@@ -15,9 +15,14 @@ public class PhotosViewModel extends ViewModel {
 
     private LiveData<PagedList<Photo>> liveData;
     @Getter
-    private MutableLiveData<StatusLoad> liveDataStatus = new MutableLiveData<>();
+    private MutableLiveData<StatusLoad> liveDataNextLoadStatus = new MutableLiveData<>();
+
+    @Getter
+    private MutableLiveData<StatusLoad> liveDataFirstLoadStatus = new MutableLiveData<>();
+    private PhotoSourceFactory sourceFactory;
 
     public PhotosViewModel() {
+
     }
 
 
@@ -29,12 +34,15 @@ public class PhotosViewModel extends ViewModel {
                     .setPrefetchDistance(5)
                     .build();
 
+            sourceFactory = new PhotoSourceFactory(liveDataFirstLoadStatus, liveDataNextLoadStatus);
 
-            PhotoSourceFactory sourceFactory = new PhotoSourceFactory(liveDataStatus);
-            return liveData = new LivePagedListBuilder(sourceFactory, config).build();
+            return liveData = new LivePagedListBuilder<>(sourceFactory, config).build();
         }
         return liveData;
     }
 
 
+    public void retryLoad() {
+        sourceFactory.getPhotoDataSourceLiveData().getValue().retry();
+    }
 }

@@ -13,10 +13,14 @@ import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.burtsev.imageviewer.adapter.PhotoAdapter;
 import ru.burtsev.imageviewer.adapter.PhotoDiffUtilCallback;
+import ru.burtsev.imageviewer.interfaces.OnItemClickListener;
+import ru.burtsev.imageviewer.interfaces.RetryCallback;
+import ru.burtsev.imageviewer.model.Photo;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnItemClickListener<Photo>, RetryCallback {
 
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    private PhotosViewModel photosViewModel;
 
 
     @Override
@@ -42,19 +47,39 @@ public class MainActivity extends AppCompatActivity {
         int recyclerColumn = getRecyclerColumn();
 
         PhotoDiffUtilCallback photoDiffUtilCallback = new PhotoDiffUtilCallback();
-        PhotoAdapter photoAdapter = new PhotoAdapter(photoDiffUtilCallback);
+        PhotoAdapter photoAdapter = new PhotoAdapter(photoDiffUtilCallback, this, this);
 
         recyclerPhotos.setLayoutManager(new GridLayoutManager(this, recyclerColumn));
         recyclerPhotos.setAdapter(photoAdapter);
 
-        PhotosViewModel photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
-        photosViewModel.getLiveDataStatus().observe(this, photoAdapter::setNetworkState);
+        photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
+        photosViewModel.getLiveDataNextLoadStatus().observe(this, photoAdapter::setNetworkState);
+        photosViewModel.getLiveDataFirstLoadStatus().observe(this, statusLoad -> {
+            if (statusLoad == null) {
+                return;
+            }
+            switch (statusLoad) {
+                case ERROR:
+                    recyclerPhotos.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
+                    viewError.setVisibility(View.VISIBLE);
+                    break;
+
+                case SUCCESS:
+                    progressBar.setVisibility(View.GONE);
+                    viewError.setVisibility(View.GONE);
+                    recyclerPhotos.setVisibility(View.VISIBLE);
+                    break;
+
+                case IN_PROGRESS:
+                    recyclerPhotos.setVisibility(View.GONE);
+                    viewError.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
         photosViewModel.getPhotos().observe(this, photoAdapter::submitList);
 
-        photoAdapter.setOnClickListener(photo -> {
-            Intent intent = PhotoDetailActivity.getStartIntent(this, photo.getUrls().getRegular());
-            startActivity(intent);
-        });
     }
 
     private int getRecyclerColumn() {
@@ -72,4 +97,19 @@ public class MainActivity extends AppCompatActivity {
         return column;
     }
 
+    @OnClick(R.id.btn_retry_loading)
+    void repeatLoad() {
+        photosViewModel.retryLoad();
+    }
+
+    @Override
+    public void onItemClick(Photo photo) {
+        Intent intent = PhotoDetailActivity.getStartIntent(this, photo.getUrls().getRegular());
+        startActivity(intent);
+    }
+
+    @Override
+    public void retry() {
+        photosViewModel.retryLoad();
+    }
 }

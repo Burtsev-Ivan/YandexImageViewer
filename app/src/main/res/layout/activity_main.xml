@@ -11,15 +11,15 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
-        <!-- Toolbar is the actual app bar with text and the action items -->
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:titleTextColor="@android:color/white"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            android:minHeight="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:titleTextColor="@android:color/white" />
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -34,8 +34,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        android:layout_marginTop="?attr/actionBarSize" />
+        android:layout_marginTop="?attr/actionBarSize"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/view_error"
@@ -55,11 +55,11 @@
             android:text="@string/data_load_error" />
 
         <Button
-            android:id="@+id/btn_repeat_download"
+            android:id="@+id/btn_retry_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="@string/repeat"
+            android:text="@string/retry"
             android:textAllCaps="false" />
 
     </LinearLayout>
