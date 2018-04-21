@@ -92,7 +92,6 @@ public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolde
         switch (getItemViewType(position)) {
             case R.layout.list_item_photo:
                 PhotoHolder photoHolder = (PhotoHolder) holder;
-
                 Photo photo = getItem(position);
                 if (photo != null && photo.getUrls() != null) {
                     Picasso.get()
@@ -102,19 +101,17 @@ public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolde
                             .placeholder(R.drawable.placeholder)
                             .into(photoHolder.imageView);
                 }
-
                 break;
+
             case R.layout.list_item_network_state:
                 NetworkStateItemHolder networkStateItemHolder = (NetworkStateItemHolder) holder;
                 if (networkState == StatusLoad.IN_PROGRESS) {
                     networkStateItemHolder.progressBar.setVisibility(View.VISIBLE);
-                    networkStateItemHolder.buttonRetryLoading.setVisibility(View.GONE);
-                    networkStateItemHolder.errorMessage.setVisibility(View.GONE);
+                    networkStateItemHolder.viewError.setVisibility(View.GONE);
 
                 } else if (networkState == StatusLoad.ERROR) {
                     networkStateItemHolder.progressBar.setVisibility(View.GONE);
-                    networkStateItemHolder.buttonRetryLoading.setVisibility(View.VISIBLE);
-                    networkStateItemHolder.errorMessage.setVisibility(View.VISIBLE);
+                    networkStateItemHolder.viewError.setVisibility(View.VISIBLE);
                 }
                 break;
         }

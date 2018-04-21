@@ -6,13 +6,6 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/text_error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/data_load_error"
-        android:gravity="center" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -21,12 +14,30 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <Button
-        android:id="@+id/button_retry_loading"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/retry" />
+    <LinearLayout
+        android:id="@+id/view_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/data_load_error" />
+
+        <Button
+            android:id="@+id/button_retry_loading"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/retry" />
+
+    </LinearLayout>
 
 </LinearLayout>

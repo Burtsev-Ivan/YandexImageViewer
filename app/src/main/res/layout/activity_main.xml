@@ -47,7 +47,7 @@
 
 
         <TextView
-            android:id="@+id/tv_error"
+            android:id="@+id/text_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -55,10 +55,11 @@
             android:text="@string/data_load_error" />
 
         <Button
-            android:id="@+id/btn_retry_loading"
+            android:id="@+id/button_retry_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:text="@string/retry"
             android:textAllCaps="false" />
 

@@ -20,6 +20,9 @@ public class NetworkStateItemHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.button_retry_loading)
     public Button buttonRetryLoading;
 
+    @BindView(R.id.view_error)
+    public View viewError;
+
     public NetworkStateItemHolder(View itemView, RetryCallback retryCallback) {
         super(itemView);
         ButterKnife.bind(this, itemView);

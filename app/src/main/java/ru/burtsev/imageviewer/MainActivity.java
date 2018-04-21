@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         return column;
     }
 
-    @OnClick(R.id.btn_retry_loading)
-    void repeatLoad() {
+    @OnClick(R.id.button_retry_loading)
+    void retryLoading() {
         photosViewModel.retryLoad();
     }
 
