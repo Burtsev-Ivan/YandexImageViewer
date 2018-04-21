@@ -22,6 +22,35 @@
         android:layout_marginBottom="20dp"
         android:layout_marginTop="20dp" />
 
+    <LinearLayout
+        android:id="@+id/view_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+
+        <TextView
+            android:id="@+id/text_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:padding="10dp"
+            android:text="@string/data_load_error" />
+
+        <Button
+            android:id="@+id/button_retry_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:text="@string/retry"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

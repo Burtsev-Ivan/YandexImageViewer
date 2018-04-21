@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PhotoDetailActivity extends AppCompatActivity {
 
@@ -28,18 +29,43 @@ public class PhotoDetailActivity extends AppCompatActivity {
     @BindView(R.id.image_photo)
     ImageView imageViewPhoto;
 
+    @BindView(R.id.view_error)
+    View viewError;
+
+    private String url;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_detail);
         ButterKnife.bind(this);
-        String url = getIntent().getStringExtra(EXTRA_URL);
+        url = getIntent().getStringExtra(EXTRA_URL);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+        loadPhoto();
+
+
+    }
+
+    public static Intent getStartIntent(Context context, String url) {
+        Intent intent = new Intent(context, PhotoDetailActivity.class);
+        intent.putExtra(EXTRA_URL, url);
+        return intent;
+    }
+
+
+    @OnClick(R.id.button_retry_loading)
+    void retryLoading() {
+        loadPhoto();
+    }
+
+    private void loadPhoto() {
+        progressBar.setVisibility(View.VISIBLE);
+        viewError.setVisibility(View.GONE);
 
         Picasso.get()
                 .load(url)
@@ -49,19 +75,15 @@ public class PhotoDetailActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         progressBar.setVisibility(View.GONE);
+                        viewError.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onError(Exception e) {
-
+                        progressBar.setVisibility(View.GONE);
+                        viewError.setVisibility(View.VISIBLE);
                     }
                 });
-
     }
 
-    public static Intent getStartIntent(Context context, String url) {
-        Intent intent = new Intent(context, PhotoDetailActivity.class);
-        intent.putExtra(EXTRA_URL, url);
-        return intent;
-    }
 }
