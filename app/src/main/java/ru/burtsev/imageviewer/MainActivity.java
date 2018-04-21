@@ -48,19 +48,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerPhotos.setAdapter(photoAdapter);
 
         PhotosViewModel photosViewModel = ViewModelProviders.of(this).get(PhotosViewModel.class);
-        photosViewModel.init();
         photosViewModel.getLiveDataStatus().observe(this, photoAdapter::setNetworkState);
-        photosViewModel.getLiveData().observe(this, photoAdapter::submitList);
+        photosViewModel.getPhotos().observe(this, photoAdapter::submitList);
 
         photoAdapter.setOnClickListener(photo -> {
             Intent intent = PhotoDetailActivity.getStartIntent(this, photo.getUrls().getRegular());
             startActivity(intent);
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     private int getRecyclerColumn() {

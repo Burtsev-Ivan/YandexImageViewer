@@ -1,12 +1,9 @@
 package ru.burtsev.imageviewer.adapter;
 
 import android.arch.paging.PagedListAdapter;
-import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,12 +91,11 @@ public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolde
 
                 Photo photo = getItem(position);
                 if (photo != null && photo.getUrls() != null) {
-                    int photoSize = (int) convertDpToPixel(200, photoHolder.imageView.getContext());
                     Picasso.get()
                             .load(photo.getUrls().getSmall())
-                            .resize(photoSize, photoSize)
+                            .fit()
                             .centerCrop()
-                            .placeholder(android.R.drawable.ic_lock_lock)
+                            .placeholder(R.drawable.placeholder)
                             .into(photoHolder.imageView);
                 }
 
@@ -126,11 +122,4 @@ public class PhotoAdapter extends PagedListAdapter<Photo, RecyclerView.ViewHolde
     public void setOnClickListener(OnItemClickListener<Photo> onClickListener) {
         this.onItemClickListener = onClickListener;
     }
-
-    private static float convertDpToPixel(float dp, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }
-
 }

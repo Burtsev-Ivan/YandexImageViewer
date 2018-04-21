@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 
-import io.reactivex.disposables.CompositeDisposable;
 import lombok.Getter;
 import ru.burtsev.imageviewer.model.Photo;
 import ru.burtsev.imageviewer.model.StatusLoad;
@@ -14,18 +13,15 @@ import ru.burtsev.imageviewer.paging.PhotoSourceFactory;
 
 public class PhotosViewModel extends ViewModel {
 
-    @Getter
     private LiveData<PagedList<Photo>> liveData;
     @Getter
     private MutableLiveData<StatusLoad> liveDataStatus = new MutableLiveData<>();
-    private final CompositeDisposable compositeDisposable;
 
     public PhotosViewModel() {
-        compositeDisposable = new CompositeDisposable();
     }
 
 
-    public void init() {
+    public LiveData<PagedList<Photo>> getPhotos() {
         if (liveData == null) {
             PagedList.Config config = new PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
@@ -35,15 +31,10 @@ public class PhotosViewModel extends ViewModel {
 
 
             PhotoSourceFactory sourceFactory = new PhotoSourceFactory(liveDataStatus);
-            liveData = new LivePagedListBuilder(sourceFactory, config).build();
+            return liveData = new LivePagedListBuilder(sourceFactory, config).build();
         }
-
-
+        return liveData;
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        compositeDisposable.clear();
-    }
+
 }
