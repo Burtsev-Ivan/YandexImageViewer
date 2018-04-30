@@ -9,6 +9,7 @@ import android.arch.paging.PagedList;
 import lombok.Getter;
 import ru.burtsev.imageviewer.model.Photo;
 import ru.burtsev.imageviewer.model.StatusLoad;
+import ru.burtsev.imageviewer.paging.PhotoDataSource;
 import ru.burtsev.imageviewer.paging.PhotoSourceFactory;
 
 public class PhotosViewModel extends ViewModel {
@@ -25,13 +26,12 @@ public class PhotosViewModel extends ViewModel {
 
     }
 
-
     public LiveData<PagedList<Photo>> getPhotos() {
         if (liveData == null) {
             PagedList.Config config = new PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
                     .setPageSize(1)
-                    .setPrefetchDistance(5)
+                    .setPrefetchDistance(10)
                     .build();
 
             sourceFactory = new PhotoSourceFactory(liveDataFirstLoadStatus, liveDataNextLoadStatus);
@@ -42,7 +42,10 @@ public class PhotosViewModel extends ViewModel {
     }
 
 
-    public void retryLoad() {
-        sourceFactory.getPhotoDataSourceLiveData().getValue().retry();
+    public void retryLoading() {
+        PhotoDataSource dataSource = sourceFactory.getPhotoDataSourceLiveData().getValue();
+        if (dataSource != null) {
+            dataSource.retry();
+        }
     }
 }

@@ -10,12 +10,6 @@ import ru.burtsev.imageviewer.model.Photo;
 public interface ApiService {
 
     @GET("/photos")
-    Observable<List<Photo>> getPhotos();
-
-    @GET("/photos")
     Observable<List<Photo>> getPhotos(@Query("page") int page);
-
-    @GET("/search/photos")
-    Observable<Photo> getPhotos(@Query("query") String search);
 
 }

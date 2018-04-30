@@ -109,7 +109,7 @@ public class PhotosFragment extends Fragment implements OnItemClickListener<Phot
 
     @OnClick(R.id.button_retry_loading)
     void retryLoading() {
-        photosViewModel.retryLoad();
+        photosViewModel.retryLoading();
     }
 
     @Override
@@ -120,6 +120,6 @@ public class PhotosFragment extends Fragment implements OnItemClickListener<Phot
 
     @Override
     public void retry() {
-        photosViewModel.retryLoad();
+        retryLoading();
     }
 }

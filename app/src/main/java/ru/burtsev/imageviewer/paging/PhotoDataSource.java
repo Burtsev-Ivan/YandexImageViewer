@@ -14,6 +14,9 @@ import ru.burtsev.imageviewer.model.Photo;
 import ru.burtsev.imageviewer.model.StatusLoad;
 import ru.burtsev.imageviewer.rest.RestUtils;
 
+/**
+ * Класс для постраничной загрузки
+ */
 public class PhotoDataSource extends PositionalDataSource<Photo> {
 
     private static final int DEFAULT_PAGE = 1;
@@ -27,7 +30,7 @@ public class PhotoDataSource extends PositionalDataSource<Photo> {
     private int pageNumber = 2;
 
 
-    public PhotoDataSource(MutableLiveData<StatusLoad> liveDataFirstLoadStatus, MutableLiveData<StatusLoad> liveDataStatus) {
+    PhotoDataSource(MutableLiveData<StatusLoad> liveDataFirstLoadStatus, MutableLiveData<StatusLoad> liveDataStatus) {
         this.liveDataStatus = liveDataStatus;
         this.liveDataFirstLoadStatus = liveDataFirstLoadStatus;
     }
@@ -67,6 +70,9 @@ public class PhotoDataSource extends PositionalDataSource<Photo> {
     }
 
 
+    /**
+     * Повторяет загрузку данных в случае ошибки
+     */
     @SuppressLint("CheckResult")
     public void retry() {
         if (retryCompletable != null) {

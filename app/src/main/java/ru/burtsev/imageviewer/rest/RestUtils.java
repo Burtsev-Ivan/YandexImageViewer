@@ -18,6 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import ru.burtsev.imageviewer.rest.interceptor.AccessTokenInterceptor;
 import ru.burtsev.imageviewer.rest.services.ApiService;
 
+/**
+ * Класс для настройки Retrofit и OkHttp3.
+ */
 public class RestUtils {
 
     private static final long TIMEOUT = 15;
@@ -26,9 +29,9 @@ public class RestUtils {
     private static OkHttpClient okHttpClient;
     private static Retrofit retrofit;
 
-    public static synchronized Retrofit getRetrofit() {
+    private static synchronized Retrofit getRetrofit() {
         if (retrofit == null) {
-            initOkHttpClient();
+            buildOkHttpClient();
             buildRetrofit(BASE_URL);
         }
         return retrofit;
@@ -43,7 +46,7 @@ public class RestUtils {
                 .build();
     }
 
-    private static void initOkHttpClient() {
+    private static void buildOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .readTimeout(TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
@@ -53,8 +56,10 @@ public class RestUtils {
 
     }
 
-    // Метод позволяющий использовать TLSv1.2 в андроиде младше api 22
-    // Без этого вылетает  SSLProtocolException
+    /**
+     * Метод позволяющий использовать TLSv1.2 в андроиде младше api 22.
+     * Без него вылетает  SSLProtocolException
+     */
     private static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
         if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 22) {
             try {
