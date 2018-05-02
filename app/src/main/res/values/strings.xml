@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ImageViewer</string>
+    <string name="app_name">Image viewer</string>
     <string name="data_load_error">При загрузке данных произошла ошибка</string>
     <string name="retry">Повторить</string>
     <string name="main_activity_title">Unsplash API</string>
