@@ -11,12 +11,14 @@ import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import lombok.Getter;
 import ru.burtsev.imageviewer.model.Photo;
+import ru.burtsev.imageviewer.model.PhotoResponse;
 import ru.burtsev.imageviewer.model.StatusLoad;
 import ru.burtsev.imageviewer.rest.RestUtils;
 
 public class PhotoDataSource extends PositionalDataSource<Photo> {
 
     private static final int DEFAULT_PAGE = 1;
+    private String category;
 
     @Getter
     private MutableLiveData<StatusLoad> liveDataStatus;
@@ -27,17 +29,22 @@ public class PhotoDataSource extends PositionalDataSource<Photo> {
     private int pageNumber = 2;
 
 
-    public PhotoDataSource(MutableLiveData<StatusLoad> liveDataFirstLoadStatus, MutableLiveData<StatusLoad> liveDataStatus) {
+    public PhotoDataSource(String category, MutableLiveData<StatusLoad> liveDataFirstLoadStatus, MutableLiveData<StatusLoad> liveDataStatus) {
         this.liveDataStatus = liveDataStatus;
         this.liveDataFirstLoadStatus = liveDataFirstLoadStatus;
+        this.category = category;
+        if (category == null) {
+            this.category = "random";
+        }
     }
 
     @SuppressLint("CheckResult")
     @Override
     public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Photo> callback) {
         liveDataFirstLoadStatus.postValue(StatusLoad.IN_PROGRESS);
-        RestUtils.getApiService().getPhotos(DEFAULT_PAGE)
+        RestUtils.getApiService().getPhotos(DEFAULT_PAGE, category)
                 .subscribeOn(Schedulers.io())
+                .map(PhotoResponse::getResults)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(photos -> {
                     callback.onResult(photos, 0);
@@ -54,8 +61,9 @@ public class PhotoDataSource extends PositionalDataSource<Photo> {
     @Override
     public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Photo> callback) {
         liveDataStatus.postValue(StatusLoad.IN_PROGRESS);
-        RestUtils.getApiService().getPhotos(pageNumber++)
+        RestUtils.getApiService().getPhotos(pageNumber++, category)
                 .subscribeOn(Schedulers.io())
+                .map(PhotoResponse::getResults)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(photos -> {
                     callback.onResult(photos);

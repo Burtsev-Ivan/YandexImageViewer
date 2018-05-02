@@ -26,7 +26,7 @@ public class PhotosViewModel extends ViewModel {
     }
 
 
-    public LiveData<PagedList<Photo>> getPhotos() {
+    public LiveData<PagedList<Photo>> getPhotos(String category) {
         if (liveData == null) {
             PagedList.Config config = new PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
@@ -34,7 +34,7 @@ public class PhotosViewModel extends ViewModel {
                     .setPrefetchDistance(5)
                     .build();
 
-            sourceFactory = new PhotoSourceFactory(liveDataFirstLoadStatus, liveDataNextLoadStatus);
+            sourceFactory = new PhotoSourceFactory(category, liveDataFirstLoadStatus, liveDataNextLoadStatus);
 
             return liveData = new LivePagedListBuilder<>(sourceFactory, config).build();
         }
@@ -44,5 +44,10 @@ public class PhotosViewModel extends ViewModel {
 
     public void retryLoad() {
         sourceFactory.getPhotoDataSourceLiveData().getValue().retry();
+    }
+
+    public LiveData<PagedList<Photo>> setCategory(String text) {
+        liveData = null;
+        return getPhotos(text);
     }
 }

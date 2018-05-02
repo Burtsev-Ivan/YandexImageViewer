@@ -13,7 +13,12 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +31,8 @@ import ru.burtsev.imageviewer.model.Photo;
 
 public class PhotosFragment extends Fragment implements OnItemClickListener<Photo>, RetryCallback {
 
+    public static final String DEFAULT_PHOTO_CATEGORY = "nature";
+
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -37,6 +44,10 @@ public class PhotosFragment extends Fragment implements OnItemClickListener<Phot
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.edit_text_category)
+    EditText editTextCategory;
+
     private PhotosViewModel photosViewModel;
     private PhotoAdapter photoAdapter;
 
@@ -76,7 +87,7 @@ public class PhotosFragment extends Fragment implements OnItemClickListener<Phot
                     break;
             }
         });
-        photosViewModel.getPhotos().observe(this, photoAdapter::submitList);
+//        photosViewModel.getPhotos(DEFAULT_PHOTO_CATEGORY).observe(this, photoAdapter::submitList);
     }
 
     @Nullable
@@ -85,6 +96,19 @@ public class PhotosFragment extends Fragment implements OnItemClickListener<Phot
         View view = inflater.inflate(R.layout.fragment_photos, container, false);
         ButterKnife.bind(this, view);
         toolbar.setTitle(R.string.main_activity_title);
+
+        RxTextView.textChanges(editTextCategory)
+                .debounce(1500, TimeUnit.MILLISECONDS)
+                .map(text -> {
+                    text = text.toString().trim();
+                    if (text.toString().length() == 0) {
+                        text = DEFAULT_PHOTO_CATEGORY;
+                    }
+                    return text.toString();
+                })
+                .subscribe(text -> {
+                    photosViewModel.setCategory(text).observe(this, photoAdapter::submitList);
+                });
 
         int recyclerColumn = getRecyclerColumn();
         recyclerPhotos.setLayoutManager(new GridLayoutManager(getActivity(), recyclerColumn));
