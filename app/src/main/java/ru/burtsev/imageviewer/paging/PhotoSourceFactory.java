@@ -11,18 +11,20 @@ public class PhotoSourceFactory extends DataSource.Factory<Integer, Photo> {
 
     private final MutableLiveData<StatusLoad> liveDataStatus;
     private final MutableLiveData<StatusLoad> liveDataFirstLoadStatus;
+    private final String category;
 
     private MutableLiveData<PhotoDataSource> photoDataSourceLiveData = new MutableLiveData<>();
 
-    public PhotoSourceFactory(MutableLiveData<StatusLoad> liveDataFirstLoadStatus, MutableLiveData<StatusLoad> liveDataStatus) {
+    public PhotoSourceFactory(String category, MutableLiveData<StatusLoad> liveDataFirstLoadStatus, MutableLiveData<StatusLoad> liveDataStatus) {
         this.liveDataStatus = liveDataStatus;
         this.liveDataFirstLoadStatus = liveDataFirstLoadStatus;
+        this.category = category;
     }
 
 
     @Override
     public DataSource<Integer, Photo> create() {
-        PhotoDataSource photoDataSource = new PhotoDataSource(liveDataFirstLoadStatus, liveDataStatus);
+        PhotoDataSource photoDataSource = new PhotoDataSource(category, liveDataFirstLoadStatus, liveDataStatus);
         photoDataSourceLiveData.postValue(photoDataSource);
         return photoDataSource;
     }
